@@ -6,20 +6,44 @@ using System.Threading.Tasks;
 
 namespace exam
 {
-    internal class Sword : Thing
+    internal class Sword_ : Thing
     {
         private int UpperDamage = 10;
-        private string Material = "Wood";
-        public Sword(int UpperDamage, string Material) : base ("Noname", 25)
+        private string name = "Wood";
+        int cool = 0;
+        public Sword_(int UpperDamage, string name, int price,int cool) : base (name, price)
         {
+            this.price = price;
             this.UpperDamage = UpperDamage;
-            this.Material = Material;
+            this.name = name;
+            this.cool = cool;
         }
         public void PrintB()
         {
             Print();
             Console.WriteLine($"\tUpperDamage whit sword -> {UpperDamage}");
-            Console.WriteLine($"\tMaterial sword -> {Material}");
+            Console.WriteLine($"\tthis -> {name}");
+        }
+    }
+    internal class Armor : Thing
+    {
+        int UpperArmor = 10;
+        private string name = "Wood";
+        int cool = 0;
+
+
+        public Armor(int price, string name, int UpperArmor, int cool) : base(name, price)
+        {
+            this.price = price;
+            this.UpperArmor = UpperArmor;
+            this.name = name;
+            this.cool = cool;
+        }
+        public void PrintB()
+        {
+            Print();
+            Console.WriteLine($"\tUpperArmor whit armor -> {UpperArmor}");
+            Console.WriteLine($"\tthis -> {name}");
         }
     }
 }

@@ -16,6 +16,7 @@ internal class Program
                 Hero me = new Hero(th);
                 me.PrintB();*/
         Game game = new Game();
-        game.PrintGrid();
+        game.Menu();
+        //game.PrintGrid();
     }
 }

@@ -20,8 +20,33 @@ namespace exam
         {
 /*            Console.WriteLine($"-------------Thing {name}-------------");
             Console.WriteLine($"\tPrice -> {price}");*/
-            Console.Write($" name -> {name}, price -> {price}");
+            Console.WriteLine($" name -> {name}, price -> {price}");
+        }
+        public int Getprice()
+        {
+            return price;
         }
     }
-    
+   internal class Coins: Thing
+    {
+        public Coins() : base("Gold Coins", 25)
+        {
+
+        }
+    }
+    internal class Nuggets : Thing
+    {
+        public Nuggets() : base("Gold Nuggets", 5)
+        {
+
+        }
+    }
+    internal class Wood : Thing
+    {
+        public Wood() : base("Wood", 1)
+        {
+
+        }
+    }
+
 }

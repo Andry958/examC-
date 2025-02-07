@@ -17,10 +17,10 @@ namespace exam
         protected string Name = "NoName";
         protected string Type = "Enemy";
         //x, y
-        protected int x = 0;
         protected int y = 0;
+        protected int x = 0;
 
-        protected Units(int hP, int mana, int damage, string name, string type, int agility, int x, int y)
+        protected Units(int hP, int mana, int damage, string name, string type, int agility, int y, int x)
         {
             HP = hP;
             Mana = mana;
@@ -28,9 +28,16 @@ namespace exam
             Name = name;
             Type = type;
             this.agility = agility;
-            this.x = x;
             this.y = y;
+            this.x = x;
         }
+        public int GetMana()
+        {
+            return Mana;
+        }
+        public void SetMana(int Mana)
+        {
+            this.Mana = Mana;        }
         public int GetX()
         {
             return x;
@@ -102,11 +109,21 @@ namespace exam
     //-----------------hero
     internal class Hero : Units
     {
-        private List<Thing> inventar;
-        private int coins = 0;
-        public Hero(List<Thing> inventar, int x, int y) : base(100, 30, 100, "You", "Hero", 2,x,y)
+        public List<Thing> inventar;
+        private int coins = 100;
+        private int Armor = 100;
+
+        public Hero(List<Thing> inventar, int y, int x) : base(100, 30, 100, "You", "Hero", 2,y,x)
         {
             this.inventar = inventar;
+        }
+        public int GetCois()
+        {
+            return coins;
+        }
+        public void SetCois(int coins)
+        {
+            this.coins = coins;
         }
         public void PrintB()
         {
@@ -119,12 +136,18 @@ namespace exam
                 {item.Print();                }
                 else{item.Print();Console.Write(", ");}
             }
-            Console.WriteLine();
-
-
+            Console.WriteLine();    
         }
         public void ChangeCh()
         {        }
+        public void PrintIn()
+        {
+            Console.WriteLine("Invantar:");
+            foreach (Thing item in inventar)
+            {
+                item.Print();
+            }
+        }
     }
 
 }

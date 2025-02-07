@@ -12,3 +12,4 @@ C:\Users\111\Desktop\shag\c#\exam\obj\Debug\net8.0\refint\exam.dll
 C:\Users\111\Desktop\shag\c#\exam\obj\Debug\net8.0\exam.pdb
 C:\Users\111\Desktop\shag\c#\exam\obj\Debug\net8.0\exam.genruntimeconfig.cache
 C:\Users\111\Desktop\shag\c#\exam\obj\Debug\net8.0\ref\exam.dll
+C:\Users\111\Desktop\shag\c#\exam\obj\Debug\net8.0\exam.sourcelink.json

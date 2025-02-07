@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,12 +16,61 @@ namespace exam
         private List<Resources> resources = new List<Resources>(); 
         private Hero hero;
         private Random rand = new Random();
+        private static int countStep = 0;
+        private List<Thing> magazine = new List<Thing>();
 
         public Game()
         {
             InitializeGrid();
             PlaceObjects();
-            Menu();
+            InitializeMag();
+            //Menu();
+        }
+        private void InitializeMag()
+        {
+            magazine.Add(new Sword_(10, "Wood sword", 10,1));
+            magazine.Add(new Sword_(25, "Iron sword", 20, 2));
+            magazine.Add(new Sword_(50, "Gold sword", 30,3));
+            magazine.Add(new Sword_(100, "Dimond sword", 50,4));
+            magazine.Add(new Armor(10, "Wood armor", 10,1));
+            magazine.Add(new Armor(25, "Iron armor", 40,2));
+        }
+        private void InMagazine()
+        {
+            Console.WriteLine($"----------------------Shop----------------------");
+            Console.WriteLine("All item:");
+            int i = 0;
+            foreach (Thing thing in magazine)
+            {
+                Console.WriteLine($"name -> {thing.name}, price -> {thing.price}, num -> {i}");i++;
+            }
+            Console.Write("Enter num for buy -> "); int choice = int.Parse(Console.ReadLine());
+            i = 0;
+
+            foreach (Thing thing in magazine)
+            {
+                if(choice == i)
+                {
+                    if(hero.GetCois() > thing.price)
+                    {
+                        var Haveitem = hero.inventar.FirstOrDefault(item => item.GetType() == thing.GetType());
+                        if (Haveitem != null)
+                        {
+                            hero.inventar.Remove(Haveitem); 
+                        }
+                        hero.inventar.Add(thing);
+                        hero.SetCois(hero.GetCois() - thing.price);
+                        Console.WriteLine("You buy!");
+                        magazine.Remove(thing);
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("you didn't have enough money! ");
+                    }
+                }
+                 i++;
+            }
         }
         public void Menu()
         {
@@ -30,7 +80,7 @@ namespace exam
 
                 Console.Write(@"    1. Print deck 
     2. Information
-    3. Move
+    3. Game
         Enter -> ");
                 int choice = int.Parse(Console.ReadLine());
                 switch (choice)
@@ -42,7 +92,7 @@ namespace exam
                         Information();
                         break;
                     case 3:
-                        Move();
+                        Game_();
                         break;
                     default:
                         Environment.Exit(0);
@@ -51,39 +101,295 @@ namespace exam
             }
 
         }
+        private void InfAboutMe()
+        {
+            hero.PrintB();
+        }
+        private void rest()
+        {
+            if (hero.GetMana() >= 100)
+            {
+                Console.WriteLine("Your mana full!");
+                return;
+            }
+            Console.WriteLine($"----------------------You rest----------------------");
+            Console.WriteLine("Zzz...");
+
+            hero.SetMana(hero.GetMana() + 10);
+            Console.WriteLine($"Your mana -> {hero.GetMana()}");
+        }
         private void Move()
         {
             Console.WriteLine($"----------------------Move----------------------");
+            Console.WriteLine("Use arrow(q - exit)");
+
+            while (true)
+            {
+
+                int newY = hero.GetY();
+                int newX = hero.GetX();
+
+                var key = Console.ReadKey(true).Key;
+
+                switch (key)
+                {
+                    case ConsoleKey.UpArrow: 
+                        if (newY > 0 && grid[newY - 1, newX] == ".")
+                            newY--;
+                        break;
+                    case ConsoleKey.RightArrow: 
+                        if (newX < grid.GetLength(1) - 1 && grid[newY, newX + 1] == ".")
+                            newX++;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        if (newY < grid.GetLength(0) - 1 && grid[newY + 1, newX] == ".")
+                            newY++;
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        if (newX > 0 && grid[newY, newX - 1] == ".")
+                            newX--;
+                        break;
+                    case ConsoleKey.Q:
+                        return;
+                    default:
+                        continue; 
+                }
+
+                if (newY == hero.GetY() && newX == hero.GetX())
+                {
+                    Console.WriteLine("You need to choose mine or attack!");
+                    return;
+                }
+
+                grid[hero.GetY(), hero.GetX()] = "."; 
+                hero.SetX(newX);
+                hero.SetY(newY);
+                grid[hero.GetY(), hero.GetX()] = "H"; 
+
+                countStep += 1;
+                PrintGrid();
+                break;
+            }
+        }
+
+    private void Mine()
+        {
+            Console.WriteLine($"----------------------Mine----------------------");
+
             Console.Write(@"    1. up
     2. right
     3. down
     4. left
         Enter -> ");
             int choice = int.Parse(Console.ReadLine());
-            grid[hero.GetX(), hero.GetY()] = ".";
+            int newY = hero.GetY();
+            int newX = hero.GetX();
+
             switch (choice)
             {
-                case 1:
-                    if (hero.GetY() < Size - 1 && grid[hero.GetX(), hero.GetY() + 1] == ".")
-                        hero.SetY(hero.GetY() + 1);
+                case 1: // Up
+                    newY--;
                     break;
-                case 2:
-                    if (hero.GetX() < Size - 1 && grid[hero.GetX() + 1, hero.GetY()] == ".")
-                        hero.SetX(hero.GetX() + 1);
+                case 2: // Right
+                    newX++;
                     break;
-                case 3:
-                    if (hero.GetY() > 0 && grid[hero.GetX(), hero.GetY() - 1] == ".")
-                        hero.SetY(hero.GetY() - 1);
+                case 3: // Down
+                    newY++;
                     break;
-                case 4:
-                    if (hero.GetX() > 0 && grid[hero.GetX() - 1, hero.GetY()] == ".")
-                        hero.SetX(hero.GetX() - 1);
+                case 4: // Left
+                    newX--;
                     break;
                 default:
                     break;
             }
-            grid[hero.GetX(), hero.GetY()] = "H";
+            if (newY < 0 || newY >= Size || newX < 0 || newX >= Size)
+            {
+                Console.WriteLine("Out of range");
+                return;
+            }
+            if (grid[newY, newX] == "G" || grid[newY, newX] == "T")
+            {
+                Resources item = FoundResour(newY, newX);
+                item.Setfortress(item.Getfortress() - 1);
+                hero.SetMana(hero.GetMana() - 5);
 
+                if (item.Getfortress() >= 1)
+                    Console.WriteLine($"You mine -> fortress res({item.Getfortress()}), your mana -> {hero.GetMana()}");
+                else
+                {
+                    Console.WriteLine($"You destroy {item.GetName()}");
+                    grid[newY, newX] = ".";
+                    if(item is Gold)
+                    {
+                        int rand_ = rand.Next(10);
+                        if (rand_ <= 3)
+                        {
+                            hero.inventar.Add(new Nuggets());
+                            Console.WriteLine("You get nuggets! ");
+                        }
+                        else
+                        {
+                            hero.inventar.Add(new Coins());
+                            hero.inventar.Add(new Coins());
+                            hero.inventar.Add(new Coins());
+                            Console.WriteLine("You get 3 coins! ");
+                        }
+                    }
+                    else
+                    {
+                        int rand_ = rand.Next(15);
+                        for (int i = 0;i < rand_; i++)
+                        {
+                            hero.inventar.Add(new Wood());
+                        }
+                        Console.WriteLine($"You get {rand_} wood! ");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("resource not found!");
+            }
+        }
+        private Resources FoundResour(int y, int x)
+        {
+            //Console.WriteLine($"{x}x, {y}y");
+            foreach (Resources item in resources)
+            {
+                //item.PrintPos();
+                if (item.GetY() == y && item.GetX() == x) return item;
+            }
+            return null;
+        }
+
+
+        private Resources FoundRes(int y, int x)
+        {
+            Console.WriteLine("");
+            foreach (Resources item in resources) {
+                item.PrintPos();
+                if(item.GetY() == y && item.GetX() == x) return item;
+            }
+            return null;
+        }
+        private void  Atack()
+        {
+            Console.WriteLine($"----------------------Atack----------------------");
+
+
+
+            Console.Write(@"    1. up
+    2. right
+    3. down
+    4. left
+        Enter -> ");
+            int choice = int.Parse(Console.ReadLine());
+            int newY = hero.GetY();
+            int newX = hero.GetX();
+
+            switch (choice)
+            {
+                case 1: // Up
+                    newY--;
+                    break;
+                case 2: // Right
+                    newX++;
+                    break;
+                case 3: // Down
+                    newY++;
+                    break;
+                case 4: // Left
+                    newX--;
+                    break;
+                default:
+                    break;
+            }
+            if (newY < 0 || newY >= Size || newX < 0 || newX >= Size)
+            {
+                Console.WriteLine("Out of range");
+                return;
+            }
+            if (grid[newY, newX] == "B" || grid[newY, newX] == "M" || grid[newY, newX] == "A")
+            {
+                Resources item = FoundResour(newY, newX);
+            }
+
+        }
+        private Units FoundEn(int y, int x)
+        {
+            Console.WriteLine("");
+            foreach (Units item in units)
+            {
+                item.PrintPos();
+                if (item.GetY() == y && item.GetX() == x) return item;
+            }
+            return null;
+        }
+        private void Game_()
+        {
+            while (true)
+            {
+
+            Console.WriteLine($"----------------------Game----------------------");
+                Console.Write(@"    1. Print deck
+    2. information about hero
+    3. Move
+    4. Mine
+    5. Rest
+    6. Check ininventarv
+    7. In shop
+    0. Menu
+        Enter -> ");
+                int choice = int.Parse(Console.ReadLine());
+                switch (choice)
+                {
+                    case 1:
+                        PrintGrid();
+                        break;
+                    case 2:
+                        InfAboutMe();
+                        break;
+                    case 3:
+                        Move();
+                        break;
+                    case 4:
+                        Mine();
+                        break;
+                    case 5:
+                        rest();
+                        break;
+                    case 6:
+                        hero.PrintIn();
+                        break;
+                    case 7:
+                        InMagazine();
+                        break;
+                    case 8:
+                        Atack();
+                        break;
+                    case 0:
+                        Menu();
+                        break;
+                    default:
+                        Environment.Exit(0);
+                        break;
+                }
+            }
+        }
+        private void SellAllThighs()
+        {
+            Console.WriteLine($"----------------------SellAllThighs----------------------");
+            Console.WriteLine("You sell:");
+            foreach (Thing item in hero.inventar)
+            {
+                item.Print();
+            }
+            foreach (Thing item in hero.inventar)
+            {
+                hero.SetCois(item.Getprice() + hero.GetCois());
+            }
+            hero.inventar.Clear();
+            Console.WriteLine($"You sell thighs and your balance -> {hero.GetCois()}");
         }
         private void Information()
         {
@@ -92,7 +398,6 @@ namespace exam
             Console.WriteLine("\tB -> Boss");
             Console.WriteLine("\tM -> Monstr");
             Console.WriteLine("\tA -> Animal");
-            Console.WriteLine("\tB -> Boss");
             Console.WriteLine("\tT -> Tree");
 
         }
@@ -100,7 +405,7 @@ namespace exam
         {
             for (int i = 0; i < Size; i++)
                 for (int j = 0; j < Size; j++)
-                    grid[i, j] = "";
+                    grid[i, j] = ".";
         }
 
         private void PlaceObjects()
@@ -129,12 +434,12 @@ namespace exam
         {
             while (true)
             {
-                int x = rand.Next(Size);
-                int y = rand.Next(Size);
-                if (grid[x, y] == " . ")
+                int x = unit.GetX();
+                int y = unit.GetY();
+                if (grid[y, x] == ".")
                 {
                     units.Add(unit);
-                    grid[x, y] = symbol;
+                    grid[y, x] = symbol;
                     break;
                 }
             }
@@ -144,12 +449,10 @@ namespace exam
         {
             while (true)
             {
-                int x = rand.Next(Size);
-                int y = rand.Next(Size);
-                if (grid[x, y] == ".")
+                if (grid[resource.GetY(),resource.GetX()] == ".")
                 {
                     resources.Add(resource);
-                    grid[x, y] = symbol;
+                    grid[resource.GetY(), resource.GetX()] = symbol;
                     break;
                 }
             }
@@ -157,16 +460,17 @@ namespace exam
 
         public void PrintGrid()
         {
-            //Console.Clear();
-            Console.WriteLine($"----------------------Menu----------------------");
+            Console.Clear();
+            Console.WriteLine($"----------------------Print----------------------");
             for (int i = 0; i < Size; i++)
             {
                 for (int j = 0; j < Size; j++)
                 {
-                    Console.Write(grid[i, j]+ " ");
+                    Console.Write(" " + grid[i, j]+ " ");
                 }
                 Console.WriteLine();
             }
+            Console.WriteLine("Count steps -> " + countStep);
         }
         
     }

@@ -26,8 +26,16 @@ namespace exam
         {
             return price;
         }
+        
     }
-   internal class Coins: Thing
+    internal class TreasuresIn : Thing
+    {
+        public TreasuresIn() : base("Treasures", 74)
+        {
+
+        }
+    }
+    internal class Coins: Thing
     {
         public Coins() : base("Gold Coins", 25)
         {

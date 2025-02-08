@@ -8,7 +8,7 @@ namespace exam
 {
     internal class Sword_ : Thing
     {
-        private int UpperDamage = 10;
+        public int UpperDamage = 10;
         private string name = "Wood";
         int cool = 0;
         public Sword_(int UpperDamage, string name, int price,int cool) : base (name, price)
@@ -27,7 +27,7 @@ namespace exam
     }
     internal class Armor : Thing
     {
-        int UpperArmor = 10;
+        public int UpperArmor = 10;
         private string name = "Wood";
         int cool = 0;
 

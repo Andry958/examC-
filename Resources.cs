@@ -57,7 +57,14 @@ namespace exam
             Console.WriteLine($"Name -> {name}, Position x -> {x}, y -> {y}");
         }
     }
-    internal class Gold : Resources
+    internal class Treasures : Resources
+    {
+        public Treasures(int y, int x) : base("Treasures", 1, y, x)
+        {
+
+        }
+    }
+        internal class Gold : Resources
     {
         public Gold(int y,int x) :base("Gold", 10,y,x)
         {

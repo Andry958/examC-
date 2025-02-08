@@ -16,11 +16,13 @@ namespace exam
         protected int Damage = 15;
         protected string Name = "NoName";
         protected string Type = "Enemy";
+        protected int coins = 100;
+
         //x, y
         protected int y = 0;
         protected int x = 0;
 
-        protected Units(int hP, int mana, int damage, string name, string type, int agility, int y, int x)
+        protected Units(int hP, int mana, int damage, string name, string type, int agility, int y, int x, int coins)
         {
             HP = hP;
             Mana = mana;
@@ -30,6 +32,47 @@ namespace exam
             this.agility = agility;
             this.y = y;
             this.x = x;
+            this.coins = coins;
+        }
+        public int GetCois()
+        {
+            return coins;
+        }
+        public void SetCois(int coins)
+        {
+            this.coins = coins;
+        }
+        public string GetName()
+        {
+            return Name;
+        }
+        public void SetName(string Name)
+        {
+            this.Name = Name;
+        }
+        public int GetHP()
+        {
+            return HP;
+        }
+        public void SetHP(int HP)
+        {
+            this.HP = HP;
+        }
+        public int Getagility()
+        {
+            return agility;
+        }
+        public void Setagility(int agility)
+        {
+            this.agility = agility;
+        }
+        public int GetDamage()
+        {
+            return Damage;
+        }
+        public void SetDamage(int Damage)
+        {
+            this.Damage = Damage;
         }
         public int GetMana()
         {
@@ -55,7 +98,7 @@ namespace exam
         {
             this.y = y;
         }
-        protected void Print()
+        public void Print()
         {
             Console.WriteLine($"-------------Unit {Name}, {Type}-------------");
             Console.WriteLine($"\tHP -> {HP}");
@@ -71,7 +114,7 @@ namespace exam
     internal class BigBoss : Units 
     {
         private int Armor = 100;
-        public BigBoss(int armor) : base(300, 200, 50, "Dragon", "Enemy", 3, 5,5)
+        public BigBoss(int armor) : base(300, 200, 50, "Dragon", "Enemy", 1, 5,5, 500)
         {
             Armor = armor;
         }
@@ -84,7 +127,7 @@ namespace exam
     }
     internal class Monsters : Units
     {
-        public Monsters(int x, int y) : base(75, 25, 50, "Monsters", "Enemy", 5,x,y)
+        public Monsters(int x, int y) : base(75, 25, 50, "Monsters", "Enemy", 2,x,y, 50)
         {
             this.x = x;
             this.y = y;
@@ -97,7 +140,7 @@ namespace exam
     }
     internal class Animals : Units
     {
-        public Animals(int x, int y) : base(25, 10, 50, "Animals", "Enemy", 1,x,y)
+        public Animals(int x, int y) : base(25, 10, 50, "Animals", "Enemy", 3,x,y, 15)
         {
 
         }
@@ -110,21 +153,13 @@ namespace exam
     internal class Hero : Units
     {
         public List<Thing> inventar;
-        private int coins = 100;
         private int Armor = 100;
 
-        public Hero(List<Thing> inventar, int y, int x) : base(100, 30, 100, "You", "Hero", 2,y,x)
+        public Hero(List<Thing> inventar, int y, int x) : base(100, 30, 100, "You", "Hero", 2,y,x, 100)
         {
             this.inventar = inventar;
         }
-        public int GetCois()
-        {
-            return coins;
-        }
-        public void SetCois(int coins)
-        {
-            this.coins = coins;
-        }
+
         public void PrintB()
         {
             Print();

@@ -207,7 +207,8 @@ namespace exam
                 Console.WriteLine("Out of range");
                 return;
             }
-            if (grid[newY, newX] == "G" || grid[newY, newX] == "T")
+            
+            if (grid[newY, newX] == "G" || grid[newY, newX] == "T" || grid[newY, newX] == "S")
             {
                 Resources item = FoundResour(newY, newX);
                 item.Setfortress(item.Getfortress() - 1);
@@ -226,6 +227,7 @@ namespace exam
                         {
                             hero.inventar.Add(new Nuggets());
                             Console.WriteLine("You get nuggets! ");
+                            return;
                         }
                         else
                         {
@@ -233,7 +235,15 @@ namespace exam
                             hero.inventar.Add(new Coins());
                             hero.inventar.Add(new Coins());
                             Console.WriteLine("You get 3 coins! ");
+                            return;
                         }
+                    }
+                    else if(item is Treasures)
+                    {
+                        Console.WriteLine("You get Treasures! ");
+                        int CoinsInTr = rand.Next(74);
+                        Console.WriteLine($"In Treasures was {CoinsInTr}");
+                        hero.SetCois(hero.GetCois() + CoinsInTr);
                     }
                     else
                     {
@@ -242,9 +252,10 @@ namespace exam
                         {
                             hero.inventar.Add(new Wood());
                         }
-                        Console.WriteLine($"You get {rand_} wood! ");
+                        Console.WriteLine($"You get {rand_} wood! ");return;
                     }
                 }
+                return;
             }
             else
             {
@@ -258,17 +269,6 @@ namespace exam
             {
                 //item.PrintPos();
                 if (item.GetY() == y && item.GetX() == x) return item;
-            }
-            return null;
-        }
-
-
-        private Resources FoundRes(int y, int x)
-        {
-            Console.WriteLine("");
-            foreach (Resources item in resources) {
-                item.PrintPos();
-                if(item.GetY() == y && item.GetX() == x) return item;
             }
             return null;
         }
@@ -311,16 +311,108 @@ namespace exam
             }
             if (grid[newY, newX] == "B" || grid[newY, newX] == "M" || grid[newY, newX] == "A")
             {
-                Resources item = FoundResour(newY, newX);
+                Units item = FoundEn(newY, newX);
+                Fight(item);
             }
 
         }
+        private void Fight(Units enemy)
+        {
+            Console.WriteLine($"You: ");
+            hero.PrintB();
+            Console.WriteLine($"Enemy: ");
+            enemy.Print();
+            int DefForArmor = FindArmor();
+            Console.WriteLine("-----------------Batle-----------");//можна зробить набагато краще якщо зробить баланс ітд але сама бойовко працює
+            while (enemy.GetHP() > 0 && hero.GetHP() > 0)
+            {
+                int randPowerEnemy = rand.Next(enemy.GetDamage());
+                int randPowerMy = rand.Next(hero.GetDamage()) + FindSword();
+                Console.WriteLine($"Your damge -> {randPowerMy}");
+                Console.WriteLine($"Your HP -> {hero.GetHP()}");
+                Console.WriteLine($"Your armor -> {DefForArmor}");
+                Console.WriteLine($"Enemy HP -> {enemy.GetHP()}");
+                Console.WriteLine($"Enemy damge -> {randPowerEnemy}");
+                enemy.SetHP(enemy.GetHP() - (randPowerMy) * hero.Getagility());
+                if (enemy.GetHP() <= 0) {
+                    Console.WriteLine("Enemy Died!");
+                    hero.SetX(enemy.GetX());
+                    hero.SetY(enemy.GetY());
+                    grid[enemy.GetY(), enemy.GetX()] = "H";
+                    grid[hero.GetY(), hero.GetX()] = ".";
+                    hero.SetCois(hero.GetCois() + enemy.GetCois());
+                    Console.WriteLine($"you took {enemy.GetCois()} coins");
+                    return;
+                }
+                hero.SetHP(hero.GetHP() - (randPowerEnemy) * enemy.Getagility() + DefForArmor);
+                if (DefForArmor > 0)
+                {
+                    hero.SetHP(hero.GetHP() - (randPowerEnemy) * enemy.Getagility() + DefForArmor);
+                    DefForArmor -= (randPowerEnemy) * enemy.Getagility();
+                }
+                else
+                    hero.SetHP(hero.GetHP() - (randPowerEnemy) * enemy.Getagility());
+                if (hero.GetHP() <= 0)
+                {
+                    Console.WriteLine("You Died!");
+                    enemy.SetX(enemy.GetX());
+                    enemy.SetY(enemy.GetY());
+                    grid[enemy.GetY(), enemy.GetX()] = ".";
+                    grid[enemy.GetY(), enemy.GetX()] = enemy.GetName()[0].ToString();
+                    Console.WriteLine($"----------------------Print----------------------");
+                    for (int i = 0; i < Size; i++)
+                    {
+                        for (int j = 0; j < Size; j++)
+                        {
+                            Console.Write(" " + grid[i, j] + " ");
+                        }
+                        Console.WriteLine();
+                    }
+                    Console.WriteLine("Count steps -> " + countStep);
+                    Environment.Exit(0);
+                    return;
+                }
+                Console.WriteLine($"You: ");
+                hero.PrintB();
+                if (DefForArmor <= 0)
+                {
+                    Console.WriteLine($"Armor is destroy! But We fix armor before starting a new battle");
+                    hero.SetCois(hero.GetCois() - 10);
+                }
+                Console.WriteLine($"Enemy: ");
+                enemy.Print();
+
+            }
+
+        }
+        private int FindArmor()
+        {
+            for (int index = 0; index < hero.inventar.Count; index++)
+            {
+                if (hero.inventar[index] is Armor armor)
+                {
+                    return armor.UpperArmor;
+                }
+            }
+            return 0;
+        }
+        private int FindSword()
+        {
+            for (int index = 0; index < hero.inventar.Count; index++)
+            {
+                if (hero.inventar[index] is Sword_ sword)
+                {
+                    return sword.UpperDamage; 
+                }
+            }
+            return 0;
+        }
         private Units FoundEn(int y, int x)
         {
-            Console.WriteLine("");
+           // Console.WriteLine("");
             foreach (Units item in units)
             {
-                item.PrintPos();
+                //item.PrintPos();
                 if (item.GetY() == y && item.GetX() == x) return item;
             }
             return null;
@@ -338,6 +430,7 @@ namespace exam
     5. Rest
     6. Check ininventarv
     7. In shop
+    8. Atack
     0. Menu
         Enter -> ");
                 int choice = int.Parse(Console.ReadLine());
@@ -415,6 +508,7 @@ namespace exam
             grid[7, 7] = "H";
 
             AddUnit(new BigBoss(50), "B");
+            AddResource(new Gold(rand.Next(Size), rand.Next(Size)), "S");
 
 
             for (int i = 0; i < 3; i++)
